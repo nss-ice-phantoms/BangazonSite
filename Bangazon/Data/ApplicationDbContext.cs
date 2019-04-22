@@ -84,6 +84,21 @@ namespace Bangazon.Data {
                 new ProductType () {
                     ProductTypeId = 2,
                         Label = "Appliances"
+                },
+                new ProductType()
+                {
+                    ProductTypeId = 3,
+                    Label = "Electronics"
+                },
+                new ProductType()
+                {
+                    ProductTypeId = 4,
+                    Label = "Toys"
+                },
+                new ProductType()
+                {
+                    ProductTypeId = 5,
+                    Label = "Furniture"
                 }
             );
 
@@ -101,10 +116,50 @@ namespace Bangazon.Data {
                     ProductId = 2,
                         ProductTypeId = 2,
                         UserId = user.Id,
-                        Description = "It rolls fast",
-                        Title = "Wheelbarrow",
+                        Description = "So chill",
+                        Title = "Refrigerator",
                         Quantity = 5,
-                        Price = 29.99
+                        Price = 400.00
+                },
+                new Product()
+                {
+                    ProductId = 3,
+                    ProductTypeId = 3,
+                    UserId = user.Id,
+                    Description = "Best iPhone evar",
+                    Title = "iPhone XSMax",
+                    Quantity = 5,
+                    Price = 1500.00
+                },
+                new Product()
+                {
+                    ProductId = 4,
+                    ProductTypeId = 3,
+                    UserId = user.Id,
+                    Description = "So vintage!",
+                    Title = "Sony Walkman",
+                    Quantity = 5,
+                    Price = 1500.00
+                },
+                new Product()
+                {
+                    ProductId = 5,
+                    ProductTypeId = 5,
+                    UserId = user.Id,
+                    Description = "Wooden",
+                    Title = "Chair",
+                    Quantity = 4,
+                    Price = 100.00
+                },
+                new Product()
+                {
+                    ProductId = 6,
+                    ProductTypeId = 4,
+                    UserId = user.Id,
+                    Description = "So realistic!",
+                    Title = "Doll",
+                    Quantity = 10,
+                    Price = 50.00
                 }
             );
 
