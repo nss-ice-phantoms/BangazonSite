@@ -7,17 +7,26 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Bangazon.Data;
 using Bangazon.Models;
-using Bangazon.Models.ProductViewModels;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Bangazon.Controllers
 {
     public class ProductsController : Controller
     {
+        //setting private reference to the I.D.F usermanager
+        private readonly UserManager<ApplicationUser> _userManager;
+
         private readonly ApplicationDbContext _context;
 
-        public ProductsController(ApplicationDbContext context)
+        //Getting the current user in the system (whoever is logged in)
+        public Task<ApplicationUser> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
+
+        public ProductsController(ApplicationDbContext context, 
+                                  UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Products
@@ -26,17 +35,16 @@ namespace Bangazon.Controllers
             var applicationDbContext = _context.Product.Include(p => p.ProductType).Include(p => p.User);                 
             return View(await applicationDbContext.ToListAsync());
         }
-
-        //Will be the YOUR PRODUCTS Page for when someone wants to delete a product they have posted
-
+        //METHOD gets the current user 
+        [Authorize]
         public async Task<IActionResult> YourProductIndex()
         {
-            // Create new instance of the view model
-            ProductListViewModel model = new ProductListViewModel();
-
-            // Set the properties of the view model
-            model.Products = await _context.Product.ToListAsync();
-            return View(model);
+            //setting the user obj to this variable
+            var user = await GetCurrentUserAsync();
+            //create a userId var that stores the current user Id
+            var userId = user.Id;
+            //return a view that is specific to the user 
+            return View(await _context.Product.Where(p => p.UserId == userId).ToListAsync());
         }
         // GET: Products/Details/5
         public async Task<IActionResult> Details(int? id)

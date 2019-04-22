@@ -4,7 +4,7 @@
     ViewData["Title"] = "YourProductIndex";
 }
 
-<h1>YourProductIndex</h1>
+<h1>Your Products</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -67,7 +67,7 @@
                 @Html.DisplayFor(modelItem => item.ImagePath)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.User.Id)
+                @Html.DisplayFor(modelItem => item.User.FirstName)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.ProductType.Label)
