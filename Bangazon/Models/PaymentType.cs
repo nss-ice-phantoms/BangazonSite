@@ -22,6 +22,7 @@ namespace Bangazon.Models
 
     [Required]
     [StringLength(20)]
+    [Display(Name = "Account Number")]
     public string AccountNumber { get; set; }
 
     [Required]

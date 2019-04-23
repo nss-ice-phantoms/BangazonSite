@@ -15,13 +15,6 @@ namespace Bangazon.Controllers
 {
     public class PaymentTypesController : Controller
     {
-        //private readonly ApplicationDbContext _context;
-
-        //public PaymentTypesController(ApplicationDbContext context)
-        //{
-        //    _context = context;
-        //}
-
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
 
@@ -37,8 +30,16 @@ namespace Bangazon.Controllers
         // GET: PaymentTypes
         public async Task<IActionResult> Index()
         {
+            var user = await GetCurrentUserAsync();
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+            var userid = user.Id;
             var applicationDbContext = _context.PaymentType.Include(p => p.User);
-            return View(await applicationDbContext.ToListAsync());
+            //return View(await applicationDbContext.ToListAsync());
+            return View(await _context.PaymentType.Where(p => p.UserId == userid).ToListAsync());
         }
 
         // GET: PaymentTypes/Details/5
@@ -61,9 +62,13 @@ namespace Bangazon.Controllers
         }
 
         // GET: PaymentTypes/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            //ViewData["UserId"] = new SelectList(_context.ApplicationUsers, "Id", "Id");
+            var user = await GetCurrentUserAsync();
+            if (user == null)
+            {
+                return NotFound();
+            }
             return View();
         }
 
@@ -79,19 +84,10 @@ namespace Bangazon.Controllers
 
             if (ModelState.IsValid)
             {
-                //var user = await GetCurrentUserAsync();
-                ////var user = await _userManager.GetUserAsync(HttpContext.User);
-                //paymentType.UserId = user.Id;
                 _context.Add(paymentType);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            //{
-            //    _context.Add(paymentType);
-            //    await _context.SaveChangesAsync();
-            //    return RedirectToAction(nameof(Index));
-            //}
-            //ViewData["UserId"] = new SelectList(_context.ApplicationUsers, "Id", "Id", paymentType.UserId);
             return View(paymentType);
         }
 
@@ -113,8 +109,6 @@ namespace Bangazon.Controllers
         }
 
         // POST: PaymentTypes/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("PaymentTypeId,DateCreated,Description,AccountNumber,UserId")] PaymentType paymentType)
@@ -151,20 +145,26 @@ namespace Bangazon.Controllers
         // GET: PaymentTypes/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+            var user = await GetCurrentUserAsync();
+            var userid = user.Id;
+
             if (id == null)
             {
                 return NotFound();
             }
-
+          
             var paymentType = await _context.PaymentType
                 .Include(p => p.User)
+                .Where(p => p.UserId == userid)
                 .FirstOrDefaultAsync(m => m.PaymentTypeId == id);
+
             if (paymentType == null)
             {
                 return NotFound();
             }
 
             return View(paymentType);
+
         }
 
         // POST: PaymentTypes/Delete/5
