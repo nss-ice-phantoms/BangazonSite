@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Bangazon.Data;
 using Bangazon.Models;
+using Bangazon.Models.ProductViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 
@@ -58,12 +59,31 @@ namespace Bangazon.Controllers
                 .Include(p => p.ProductType)
                 .Include(p => p.User)
                 .FirstOrDefaultAsync(m => m.ProductId == id);
-            if (product == null)
-            {
+            if (product == null) {
                 return NotFound();
             }
 
             return View(product);
+        }
+
+        public async Task<IActionResult> Types() {
+
+            var model = new ProductTypesViewModel();
+
+            var GroupedProducts = await (
+                from t in _context.ProductType
+                join p in _context.Product
+                on t.ProductTypeId equals p.ProductTypeId
+                group new { t, p } by new { t.ProductTypeId, t.Label } into grouped
+                select new GroupedProducts {
+                    TypeId = grouped.Key.ProductTypeId,
+                    TypeName = grouped.Key.Label,
+                    ProductCount = grouped.Select(x => x.p.ProductId).Count(),
+                    Products = grouped.Select(x => x.p).Take(3).ToList()
+                }).ToListAsync();
+
+            model.GroupedProducts = GroupedProducts;
+            return View(model);
         }
 
         // GET: Products/Create
