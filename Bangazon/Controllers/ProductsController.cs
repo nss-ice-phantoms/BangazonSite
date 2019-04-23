@@ -14,14 +14,16 @@ namespace Bangazon.Controllers
 {
     public class ProductsController : Controller
     {
-        private readonly ApplicationDbContext _context;
-
+        //setting private reference to the I.D.F usermanager
         private readonly UserManager<ApplicationUser> _userManager;
 
-        private Task<ApplicationUser> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
+        private readonly ApplicationDbContext _context;
 
+        //Getting the current user in the system (whoever is logged in)
+        public Task<ApplicationUser> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
 
-        public ProductsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public ProductsController(ApplicationDbContext context,
+                                  UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _userManager = userManager;
@@ -33,13 +35,16 @@ namespace Bangazon.Controllers
             var applicationDbContext = _context.Product.Include(p => p.ProductType).Include(p => p.User);
             return View(await applicationDbContext.ToListAsync());
         }
-
+        //METHOD gets the current user
         [Authorize]
         public async Task<IActionResult> YourProductIndex()
         {
+            //setting the user obj to this variable
             var user = await GetCurrentUserAsync();
-            var userid = user.Id;
-            return View(await _context.Product.Where(p => p.UserId == userid).ToListAsync());
+            //create a userId var that stores the current user Id
+            var userId = user.Id;
+            //return a view
+            return View(await _context.Product.Where(p => p.UserId == userId).ToListAsync());
         }
         // GET: Products/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -65,12 +70,12 @@ namespace Bangazon.Controllers
         public IActionResult Create()
         {
             ViewData["ProductTypeId"] = new SelectList(_context.ProductType, "ProductTypeId", "Label");
-            
+
             return View();
         }
 
         // POST: Products/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -81,7 +86,7 @@ namespace Bangazon.Controllers
 
             ApplicationUser user = await GetCurrentUserAsync();
             product.UserId = user.Id;
-            
+
             if (ModelState.IsValid)
             {
                 _context.Add(product);
@@ -91,7 +96,7 @@ namespace Bangazon.Controllers
                 return RedirectToAction("Details", new { id = product.ProductId });
             }
             ViewData["ProductTypeId"] = new SelectList(_context.ProductType, "ProductTypeId", "Label", product.ProductTypeId);
-            
+
 
             return View(product);
 
@@ -116,7 +121,7 @@ namespace Bangazon.Controllers
         }
 
         // POST: Products/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -177,10 +182,17 @@ namespace Bangazon.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var product = await _context.Product.FindAsync(id);
-            _context.Product.Remove(product);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            if (!ProductExists(id))
+            {
+                var product = await _context.Product.FindAsync(id);
+                _context.Product.Remove(product);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         private bool ProductExists(int id)
