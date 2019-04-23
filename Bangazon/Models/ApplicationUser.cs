@@ -19,6 +19,15 @@ namespace Bangazon.Models
         [Required]
         [Display(Name ="Last Name")]
         public string LastName { get; set; }
+        
+        [Display(Name = "Name")]
+        public string FullName
+        {
+            get
+            {
+                return $"{FirstName} {LastName}";
+            }
+        }
 
         [Required]
         public string StreetAddress { get; set; }

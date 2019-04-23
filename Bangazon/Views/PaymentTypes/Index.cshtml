@@ -1,0 +1,49 @@
+﻿@model IEnumerable<Bangazon.Models.PaymentType>
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+    <h1>Payment Methods</h1>
+
+    <p>
+        <a asp-action="Create">Add New Payment Method</a>
+    </p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Description)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.AccountNumber)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.User)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Description)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AccountNumber)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.User.FirstName)
+                    </td>
+                    <td>
+                        @*<a asp-action="Edit" asp-route-id="@item.PaymentTypeId">Edit</a> |*@
+                        <a asp-action="Delete" asp-route-id="@item.PaymentTypeId">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
