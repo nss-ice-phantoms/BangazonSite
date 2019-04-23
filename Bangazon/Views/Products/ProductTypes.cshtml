@@ -1,0 +1,16 @@
+﻿@model Bangazon.Models.ProductType
+
+@{
+    ViewData["Title"] = "ProductTypes";
+}
+
+    <div>
+        <h4>@Html.DisplayFor(model => model.Label)</h4>
+        <hr />
+        @foreach (var product in Model.Products) {
+            <a asp-controller="Products" asp-action="Details" asp-route-id="@product.ProductId">
+                @Html.DisplayFor(model => product.Title)
+            </a>
+            <br />
+        }
+    </div>

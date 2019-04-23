@@ -71,10 +71,13 @@ namespace Bangazon
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Products}/{action=Index}/{id?}");
 
                 routes.MapRoute("types", "types",
                     defaults: new { controller = "Products", action = "Types" });
+
+                routes.MapRoute("producttypes", "producttypes",
+                    defaults: new { controller = "Products", action = "ProductTypes" });
             });
         }
     }

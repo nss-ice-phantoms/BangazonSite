@@ -33,7 +33,11 @@ namespace Bangazon.Controllers
         // GET: Products
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Product.Include(p => p.ProductType).Include(p => p.User);
+            var applicationDbContext = _context.Product
+                .Include(p => p.ProductType)
+                .Include(p => p.User)
+                .OrderBy(p => p.DateCreated)
+                .Take(20);
             return View(await applicationDbContext.ToListAsync());
         }
         //METHOD gets the current user
@@ -66,6 +70,14 @@ namespace Bangazon.Controllers
             return View(product);
         }
 
+        public async Task<IActionResult> ProductTypes(int id) {
+
+            var ProductsByType = await _context.ProductType
+                .Include(pt => pt.Products)
+                .FirstOrDefaultAsync(pt => pt.ProductTypeId == id);
+
+            return View(ProductsByType);
+        }
         public async Task<IActionResult> Types() {
 
             var model = new ProductTypesViewModel();

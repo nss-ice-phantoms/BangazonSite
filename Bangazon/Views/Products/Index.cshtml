@@ -70,7 +70,9 @@
                 @Html.DisplayFor(modelItem => item.User.FirstName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ProductType.Label)
+                <a asp-controller="Products" asp-action="ProductTypes" asp-route-id="@item.ProductTypeId">
+                    @Html.DisplayFor(modelItem => item.ProductType.Label)
+                </a> 
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> |
