@@ -22,7 +22,7 @@ namespace Bangazon.Controllers
         //Getting the current user in the system (whoever is logged in)
         public Task<ApplicationUser> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
 
-        public ProductsController(ApplicationDbContext context, 
+        public ProductsController(ApplicationDbContext context,
                                   UserManager<ApplicationUser> userManager)
         {
             _context = context;
@@ -32,10 +32,10 @@ namespace Bangazon.Controllers
         // GET: Products
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Product.Include(p => p.ProductType).Include(p => p.User);                 
+            var applicationDbContext = _context.Product.Include(p => p.ProductType).Include(p => p.User);
             return View(await applicationDbContext.ToListAsync());
         }
-        //METHOD gets the current user 
+        //METHOD gets the current user
         [Authorize]
         public async Task<IActionResult> YourProductIndex()
         {
@@ -70,26 +70,36 @@ namespace Bangazon.Controllers
         public IActionResult Create()
         {
             ViewData["ProductTypeId"] = new SelectList(_context.ProductType, "ProductTypeId", "Label");
-            ViewData["UserId"] = new SelectList(_context.ApplicationUsers, "Id", "Id");
+
             return View();
         }
 
         // POST: Products/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ProductId,DateCreated,Description,Title,Price,Quantity,UserId,City,ImagePath,ProductTypeId")] Product product)
         {
+            ModelState.Remove("User");
+            ModelState.Remove("UserId");
+
+            ApplicationUser user = await GetCurrentUserAsync();
+            product.UserId = user.Id;
+
             if (ModelState.IsValid)
             {
                 _context.Add(product);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                int id = product.ProductId;
+
+                return RedirectToAction("Details", new { id = product.ProductId });
             }
             ViewData["ProductTypeId"] = new SelectList(_context.ProductType, "ProductTypeId", "Label", product.ProductTypeId);
-            ViewData["UserId"] = new SelectList(_context.ApplicationUsers, "Id", "Id", product.UserId);
+
+
             return View(product);
+
         }
 
         // GET: Products/Edit/5
@@ -111,7 +121,7 @@ namespace Bangazon.Controllers
         }
 
         // POST: Products/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
