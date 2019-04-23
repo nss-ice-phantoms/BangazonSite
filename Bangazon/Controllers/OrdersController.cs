@@ -7,36 +7,55 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Bangazon.Data;
 using Bangazon.Models;
+using Microsoft.AspNetCore.Identity;
+using Bangazon.Models.OrderViewModels;
 
 namespace Bangazon.Controllers
 {
     public class OrdersController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public OrdersController(ApplicationDbContext context)
+        public OrdersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
+
+        private Task<ApplicationUser> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
 
         // GET: Orders
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Order.Include(o => o.PaymentType).Include(o => o.User).Where(o => o.PaymentTypeId != null);
+            var user = await GetCurrentUserAsync();
+            if (user == null)
+            {
+                return NotFound();
+            }
+            var userid = user.Id;
+            var applicationDbContext = _context.Order
+                .Include(o => o.PaymentType)
+                .Include(o => o.User)
+                .Where(o => o.UserId == userid && o.PaymentTypeId != null);
             return View(await applicationDbContext.ToListAsync());
         }
 
         // GET: Orders/Cart
         public async Task<IActionResult> Cart()
         {
-            //var user = await GetCurrentUserAsync();
-            //var userid = user.Id;
+            var user = await GetCurrentUserAsync();
+            if (user == null)
+            {
+                return NotFound();
+            }
+            var userid = user.Id;
             var applicationDbContext = _context.Order
                 .Include(o => o.PaymentType)
                 .Include(o => o.User)
                 .Include(o => o.OrderProducts)
                     .ThenInclude(op => op.Product)
-                .Where(o => o.PaymentTypeId == null);
+                .Where(o => o.UserId == userid && o.PaymentTypeId == null);
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -48,13 +67,20 @@ namespace Bangazon.Controllers
                 return NotFound();
             }
 
+            var user = await GetCurrentUserAsync();
+            if (user == null)
+            {
+                return NotFound();
+            }
+
             var order = await _context.Order
                 .Include(o => o.PaymentType)
                 .Include(o => o.User)
                 .Include(o => o.OrderProducts)
                     .ThenInclude(op => op.Product)
                 .FirstOrDefaultAsync(m => m.OrderId == id);
-            if (order == null)
+
+            if (order == null || order.UserId != user.Id)
             {
                 return NotFound();
             }
@@ -95,18 +121,22 @@ namespace Bangazon.Controllers
             }
 
             var order = await _context.Order.FindAsync(id);
-            if (order == null)
+            if (order == null || order.PaymentTypeId != null)
             {
                 return NotFound();
             }
-            ViewData["PaymentTypeId"] = new SelectList(_context.PaymentType, "PaymentTypeId", "AccountNumber", order.PaymentTypeId);
-            ViewData["UserId"] = new SelectList(_context.ApplicationUsers, "Id", "Id", order.UserId);
+
+            var user = await GetCurrentUserAsync();
+            if (user == null)
+            {
+                return NotFound();
+            }
+            ViewData["PaymentTypeId"] = new SelectList(_context.PaymentType.Where(p => p.UserId == user.Id), "PaymentTypeId", "PaymentMethod");
             return View(order);
+            
         }
 
         // POST: Orders/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("OrderId,DateCreated,DateCompleted,UserId,PaymentTypeId")] Order order)
@@ -115,6 +145,14 @@ namespace Bangazon.Controllers
             {
                 return NotFound();
             }
+
+            ModelState.Remove("User");
+            ModelState.Remove("userId");
+            var user = await GetCurrentUserAsync();
+            order.UserId = user.Id;
+
+            DateTime today = DateTime.UtcNow;
+            order.DateCompleted = today;
 
             if (ModelState.IsValid)
             {
@@ -136,8 +174,7 @@ namespace Bangazon.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["PaymentTypeId"] = new SelectList(_context.PaymentType, "PaymentTypeId", "AccountNumber", order.PaymentTypeId);
-            ViewData["UserId"] = new SelectList(_context.ApplicationUsers, "Id", "Id", order.UserId);
+            
             return View(order);
         }
 
@@ -153,7 +190,10 @@ namespace Bangazon.Controllers
                 .Include(o => o.PaymentType)
                 .Include(o => o.User)
                 .FirstOrDefaultAsync(m => m.OrderId == id);
-            if (order == null)
+
+            var user = await GetCurrentUserAsync();
+
+            if (order == null || order.UserId != user.Id || order.PaymentTypeId != null)
             {
                 return NotFound();
             }
@@ -167,6 +207,13 @@ namespace Bangazon.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var order = await _context.Order.FindAsync(id);
+            var orderProducts = _context.OrderProduct;
+            foreach (OrderProduct item in orderProducts) {
+                if (item.OrderId == order.OrderId)
+                {
+                    orderProducts.Remove(item);
+                }
+            }
             _context.Order.Remove(order);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

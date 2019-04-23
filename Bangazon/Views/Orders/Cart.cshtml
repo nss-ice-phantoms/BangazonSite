@@ -5,40 +5,48 @@
 }
 
 <h1>Your Shopping Cart</h1>
-
+@if (Model.Count() < 1)
+{
+    <div>Your shopping cart is empty!</div>
+}
 @foreach (var orderItem in Model)
 {
-    @Html.DisplayFor(model => orderItem.User.FirstName)
-    <table class="table">
-        <tbody>
-            <tr>
-                <td>
-                    <table class="table">
-                        <tr>
-                            <th>Product</th>
-                            <th>Price</th>
-                        </tr>
-                        @foreach (var orderProduct in orderItem.OrderProducts)
-                        {
+    @*if (orderItem.OrderProducts.Count < 1)
+    {
+        <div>Your shopping cart is empty!</div>
+    }
+    else*@
+        <table class="table">
+            <tbody>
+                <tr>
+                    <td>
+                        <table class="table">
                             <tr>
-                                <td>
-                                    @Html.DisplayFor(modelItem => orderProduct.Product.Title)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => orderProduct.Product.Price)
-                                </td>
+                                <th>Product</th>
+                                <th>Price</th>
                             </tr>
-                        }
-                    </table>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@orderItem.OrderId">Edit</a> |
-                    @*<a asp-action="Details" asp-route-id="@item.OrderId">Details</a> |*@
-                    <a asp-action="Delete" asp-route-id="@orderItem.OrderId">Delete</a>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+                            @foreach (var orderProduct in orderItem.OrderProducts)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => orderProduct.Product.Title)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => orderProduct.Product.Price)
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@orderItem.OrderId">Proceed to Checkout</a> |
+                        @*<a asp-action="Details" asp-route-id="@item.OrderId">Details</a> |*@
+                        <a asp-action="Delete" asp-route-id="@orderItem.OrderId">Empty Shopping Cart</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
 }

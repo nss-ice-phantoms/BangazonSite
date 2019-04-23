@@ -31,7 +31,7 @@
                 @Html.DisplayFor(modelItem => item.User.FirstName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.PaymentType.Description) @Html.DisplayFor(modelItem => item.PaymentType.AccountNumber)
+                @Html.DisplayFor(modelItem => item.PaymentType.PaymentMethod)
             </td>
             <td>
                 <a asp-action="Details" asp-route-id="@item.OrderId">Details</a>
