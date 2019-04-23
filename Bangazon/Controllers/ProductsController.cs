@@ -9,6 +9,7 @@ using Bangazon.Data;
 using Bangazon.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using Bangazon.Models.ProductViewModels;
 
 namespace Bangazon.Controllers
 {
@@ -69,9 +70,34 @@ namespace Bangazon.Controllers
         // GET: Products/Create
         public IActionResult Create()
         {
-            ViewData["ProductTypeId"] = new SelectList(_context.ProductType, "ProductTypeId", "Label");
+            var productTypesComplete = _context.ProductType;
 
-            return View();
+            List<SelectListItem> productTypes = new List<SelectListItem>();
+
+            productTypes.Insert(0, new SelectListItem
+            {
+                Text = "Assign a Product Category",
+                Value = ""
+            });
+
+            foreach (var pt in productTypesComplete)
+            {
+                SelectListItem li = new SelectListItem
+                {
+                    Value = pt.ProductTypeId.ToString(),
+                    Text = pt.Label
+                };
+                productTypes.Add(li);
+            }
+
+            ProductCreateViewModel viewModel = new ProductCreateViewModel();
+
+            // Assign productTypes select list item to the product Types in ProductCreateViewModel
+            viewModel.ProductTypeList = productTypes;
+
+            // View Data for dropdowns
+            ViewData["ProductTypeId"] = new SelectList(_context.ProductType, "ProductTypeId", "Label");
+            return View(viewModel);
         }
 
         // POST: Products/Create
@@ -79,26 +105,51 @@ namespace Bangazon.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProductId,DateCreated,Description,Title,Price,Quantity,UserId,City,ImagePath,ProductTypeId")] Product product)
+        public async Task<IActionResult> Create(ProductCreateViewModel viewModel)
         {
-            ModelState.Remove("User");
-            ModelState.Remove("UserId");
+            ModelState.Remove("Product.User");
+            ModelState.Remove("Product.UserId");
+
 
             ApplicationUser user = await GetCurrentUserAsync();
-            product.UserId = user.Id;
+
+            viewModel.Product.User = user;
+            viewModel.Product.UserId = user.Id;
 
             if (ModelState.IsValid)
-            {
-                _context.Add(product);
+            {               
+                _context.Add(viewModel.Product);
+
                 await _context.SaveChangesAsync();
-                int id = product.ProductId;
 
-                return RedirectToAction("Details", new { id = product.ProductId });
+                return RedirectToAction("Details", new { id = viewModel.Product.ProductId.ToString() });
             }
-            ViewData["ProductTypeId"] = new SelectList(_context.ProductType, "ProductTypeId", "Label", product.ProductTypeId);
 
+            ViewData["ProductTypeId"] = new SelectList(_context.ProductType, "ProductTypeId", "Label", viewModel.Product.ProductTypeId);
 
-            return View(product);
+            var productTypesComplete = _context.ProductType;
+
+            List<SelectListItem> productTypes = new List<SelectListItem>();
+
+            productTypes.Insert(0, new SelectListItem
+            {
+                Text = "Assign a Product Category",
+                Value = ""
+            });
+
+            foreach (var pt in productTypesComplete)
+            {
+                SelectListItem li = new SelectListItem
+                {
+                    Value = pt.ProductTypeId.ToString(),
+                    Text = pt.Label
+                };
+                productTypes.Add(li);
+            }
+
+            viewModel.ProductTypeList = productTypes;
+
+            return View(viewModel);
 
         }
 
@@ -182,7 +233,7 @@ namespace Bangazon.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (!ProductExists(id))
+            if (ProductExists(id))
             {
                 var product = await _context.Product.FindAsync(id);
                 _context.Product.Remove(product);
