@@ -35,6 +35,10 @@ namespace Bangazon.Controllers
             var applicationDbContext = _context.Product.Include(p => p.ProductType).Include(p => p.User);
             return View(await applicationDbContext.ToListAsync());
         }
+        public async Task<IActionResult> DeleteDenied()
+        {
+            return View();
+        }
         //METHOD gets the current user
         [Authorize]
         public async Task<IActionResult> YourProductIndex()
@@ -182,17 +186,22 @@ namespace Bangazon.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (!ProductExists(id))
+
+            var product = await _context.Product
+                .Include(p => p.OrderProducts)
+                .FirstOrDefaultAsync(p => p.ProductId == id);
+
+            if(product.OrderProducts.Count == 0)
             {
-                var product = await _context.Product.FindAsync(id);
                 _context.Product.Remove(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             else
             {
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(DeleteDenied));
             }
+
         }
 
         private bool ProductExists(int id)
