@@ -43,7 +43,7 @@ namespace Bangazon.Controllers
             var user = await GetCurrentUserAsync();
             //create a userId var that stores the current user Id
             var userId = user.Id;
-            //return a view that is specific to the user 
+            //return a view
             return View(await _context.Product.Where(p => p.UserId == userId).ToListAsync());
         }
         // GET: Products/Details/5
@@ -172,10 +172,17 @@ namespace Bangazon.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var product = await _context.Product.FindAsync(id);
-            _context.Product.Remove(product);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            if (!ProductExists(id))
+            {
+                var product = await _context.Product.FindAsync(id);
+                _context.Product.Remove(product);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         private bool ProductExists(int id)
