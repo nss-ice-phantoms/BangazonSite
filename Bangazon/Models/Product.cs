@@ -17,6 +17,8 @@ namespace Bangazon.Models
 
     [Required]
     [StringLength(255)]
+    [RegularExpression(@"^[a-zA-Z''-'\s]{1,40}$",
+        ErrorMessage = "Characters are not allowed.")]
     public string Description { get; set; }
 
     [Required]
