@@ -218,6 +218,14 @@ namespace Bangazon.Controllers
             {
                 return NotFound();
             }
+            ModelState.Remove("User");
+            ModelState.Remove("UserId");
+
+
+            ApplicationUser user = await GetCurrentUserAsync();
+
+            product.User = user;
+            product.UserId = user.Id;
 
             if (ModelState.IsValid)
             {
@@ -237,7 +245,7 @@ namespace Bangazon.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(YourProductIndex));
             }
             ViewData["ProductTypeId"] = new SelectList(_context.ProductType, "ProductTypeId", "Label", product.ProductTypeId);
             ViewData["UserId"] = new SelectList(_context.ApplicationUsers, "Id", "Id", product.UserId);
@@ -269,7 +277,9 @@ namespace Bangazon.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var product = await _context.Product.Include(p => p.OrderProducts).FirstOrDefaultAsync(p => p.ProductId == id);
+            var product = await _context.Product
+            .Include(p => p.OrderProducts)
+            .FirstOrDefaultAsync(p => p.ProductId == id);
 
             if (product.OrderProducts.Count == 0)
             {
