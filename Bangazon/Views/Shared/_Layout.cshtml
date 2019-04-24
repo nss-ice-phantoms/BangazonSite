@@ -33,20 +33,31 @@
                     <partial name="_LoginPartial" />
                     <ul class="navbar-nav flex-grow-1">
                         @*<li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>*@
-                        @if(SignInManager.IsSignedIn(User))
-                            {
+            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+        </li>*@
+                        @if (SignInManager.IsSignedIn(User)) {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="Index">Buy</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="YourProductIndex">Sell</a>
                             </li>
-                             <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="Types">Product Categories</a>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="Types">Product Categories</a>
                             </li>
-                            }
+                            <li>
+                                <form asp-controller="Products" asp-action="Index">
+                                    <input type="text" name="SearchString" placeholder="Search Title" size="10">
+                                    <input type="submit" value="Search" />
+                                </form>
+                            </li>
+                            <li>
+                                <form asp-controller="Products" asp-action="Index">
+                                    <input type="text" name="CitySearch" placeholder="Search By City" size="10">
+                                    <input type="submit" value="Search" />
+                                </form>
+                            </li>
+                        }
                         @*<li class="nav-item">
             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">View Cart</a>
         </li>*@
