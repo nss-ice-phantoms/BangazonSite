@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -31,14 +30,45 @@ namespace Bangazon.Controllers
         }
 
         // GET: Products
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString, string citySearch)
         {
-            var applicationDbContext = _context.Product
-                .Include(p => p.ProductType)
-                .Include(p => p.User)
-                .OrderByDescending(p => p.DateCreated)
-                .Take(20);
-            return View(await applicationDbContext.ToListAsync());
+            if (string.IsNullOrEmpty(searchString) && string.IsNullOrEmpty(citySearch)) {
+
+                var products = await _context.Product
+                    .Include(p => p.ProductType)
+                    .Include(p => p.User)
+                    .OrderByDescending(p => p.DateCreated)
+                    .Take(20)
+                    .ToListAsync();
+
+                return View(products);
+
+            }
+
+            if (string.IsNullOrEmpty(citySearch) && !string.IsNullOrEmpty(searchString)) {
+
+                var products = await _context.Product
+                   .Include(p => p.ProductType)
+                   .Include(p => p.User)
+                   .OrderByDescending(p => p.DateCreated)
+                   .Where(p => p.Title.Contains(searchString))
+                   .ToListAsync();
+                return View(products);
+
+            }
+
+            if (string.IsNullOrEmpty(searchString) && !string.IsNullOrEmpty(citySearch)) {
+
+                var products = await _context.Product
+                    .Include(p => p.ProductType)
+                    .Include(p => p.User)
+                    .OrderByDescending(p => p.DateCreated)
+                    .Where(p => p.City.Contains(citySearch))
+                    .ToListAsync();
+                return View(products);
+            }
+
+            return View();
         }
         public async Task<IActionResult> DeleteDenied()
         {
@@ -152,7 +182,7 @@ namespace Bangazon.Controllers
             viewModel.Product.UserId = user.Id;
 
             if (ModelState.IsValid)
-            {               
+            {
                 _context.Add(viewModel.Product);
 
                 await _context.SaveChangesAsync();
