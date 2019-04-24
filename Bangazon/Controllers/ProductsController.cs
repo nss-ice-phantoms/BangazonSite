@@ -36,7 +36,7 @@ namespace Bangazon.Controllers
             var applicationDbContext = _context.Product
                 .Include(p => p.ProductType)
                 .Include(p => p.User)
-                .OrderBy(p => p.DateCreated)
+                .OrderByDescending(p => p.DateCreated)
                 .Take(20);
             return View(await applicationDbContext.ToListAsync());
         }
