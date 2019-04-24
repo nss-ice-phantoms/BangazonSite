@@ -10,7 +10,6 @@ using Bangazon.Models;
 using Bangazon.Models.ProductViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
-using Bangazon.Models.ProductViewModels;
 
 namespace Bangazon.Controllers
 {
@@ -270,8 +269,11 @@ namespace Bangazon.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            var product = await _context.Product
+            .Include(p => p.OrderProducts)
+            .FirstOrDefaultAsync(p => p.ProductId == id);
 
-            if(product.OrderProducts.Count == 0)
+            if (product.OrderProducts.Count == 0)
             {
                 _context.Product.Remove(product);
                 await _context.SaveChangesAsync();
