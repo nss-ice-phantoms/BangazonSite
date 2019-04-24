@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Bangazon.Data;
 using Bangazon.Models;
+using Bangazon.Models.ProductViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Bangazon.Models.ProductViewModels;
@@ -33,8 +34,16 @@ namespace Bangazon.Controllers
         // GET: Products
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Product.Include(p => p.ProductType).Include(p => p.User);
+            var applicationDbContext = _context.Product
+                .Include(p => p.ProductType)
+                .Include(p => p.User)
+                .OrderByDescending(p => p.DateCreated)
+                .Take(20);
             return View(await applicationDbContext.ToListAsync());
+        }
+        public async Task<IActionResult> DeleteDenied()
+        {
+            return View();
         }
         //METHOD gets the current user
         [Authorize]
@@ -59,12 +68,39 @@ namespace Bangazon.Controllers
                 .Include(p => p.ProductType)
                 .Include(p => p.User)
                 .FirstOrDefaultAsync(m => m.ProductId == id);
-            if (product == null)
-            {
+            if (product == null) {
                 return NotFound();
             }
 
             return View(product);
+        }
+
+        public async Task<IActionResult> ProductTypes(int id) {
+
+            var ProductsByType = await _context.ProductType
+                .Include(pt => pt.Products)
+                .FirstOrDefaultAsync(pt => pt.ProductTypeId == id);
+
+            return View(ProductsByType);
+        }
+        public async Task<IActionResult> Types() {
+
+            var model = new ProductTypesViewModel();
+
+            var GroupedProducts = await (
+                from t in _context.ProductType
+                join p in _context.Product
+                on t.ProductTypeId equals p.ProductTypeId
+                group new { t, p } by new { t.ProductTypeId, t.Label } into grouped
+                select new GroupedProducts {
+                    TypeId = grouped.Key.ProductTypeId,
+                    TypeName = grouped.Key.Label,
+                    ProductCount = grouped.Select(x => x.p.ProductId).Count(),
+                    Products = grouped.Select(x => x.p).Take(3).ToList()
+                }).ToListAsync();
+
+            model.GroupedProducts = GroupedProducts;
+            return View(model);
         }
 
         // GET: Products/Create
@@ -234,17 +270,18 @@ namespace Bangazon.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (ProductExists(id))
+
+            if(product.OrderProducts.Count == 0)
             {
-                var product = await _context.Product.FindAsync(id);
                 _context.Product.Remove(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             else
             {
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(DeleteDenied));
             }
+
         }
 
         private bool ProductExists(int id)

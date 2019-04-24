@@ -1,0 +1,35 @@
+﻿@* @model Bangazon.Models.OrderViewModels.OrderPaymentViewModel*@
+@model Bangazon.Models.Order
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Submit Order</h1>
+
+<h4>Choose Your Payment Method</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="OrderId" />
+            <div class="form-group">
+                <label asp-for="PaymentTypeId" class="control-label"></label>
+                <select asp-for="PaymentTypeId" class="form-control" asp-items="ViewBag.PaymentTypeId"></select>
+                @*<select asp-for="Order.PaymentTypeId" class="form-control" asp-items="@Model.PaymentOptions"></select>*@
+                <span asp-validation-for="PaymentTypeId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Submit Order" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Cart">Return to Cart</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
