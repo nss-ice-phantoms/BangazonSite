@@ -136,6 +136,12 @@ namespace Bangazon.Controllers
             
         }
 
+        // Order Confirmation
+        public IActionResult OrderConfirm()
+        {
+            return View();
+        }
+
         // POST: Orders/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -172,11 +178,12 @@ namespace Bangazon.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(OrderConfirm));
             }
             
             return View(order);
         }
+
 
         // GET: Orders/Delete/5
         public async Task<IActionResult> Delete(int? id)
