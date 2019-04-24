@@ -43,7 +43,7 @@ namespace Bangazon.Controllers
 
                 return View(products);
 
-            } 
+            }
 
             if (string.IsNullOrEmpty(citySearch) && !string.IsNullOrEmpty(searchString)) {
 
@@ -182,7 +182,7 @@ namespace Bangazon.Controllers
             viewModel.Product.UserId = user.Id;
 
             if (ModelState.IsValid)
-            {               
+            {
                 _context.Add(viewModel.Product);
 
                 await _context.SaveChangesAsync();
@@ -248,6 +248,14 @@ namespace Bangazon.Controllers
             {
                 return NotFound();
             }
+            ModelState.Remove("User");
+            ModelState.Remove("UserId");
+
+
+            ApplicationUser user = await GetCurrentUserAsync();
+
+            product.User = user;
+            product.UserId = user.Id;
 
             if (ModelState.IsValid)
             {
@@ -267,7 +275,7 @@ namespace Bangazon.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(YourProductIndex));
             }
             ViewData["ProductTypeId"] = new SelectList(_context.ProductType, "ProductTypeId", "Label", product.ProductTypeId);
             ViewData["UserId"] = new SelectList(_context.ApplicationUsers, "Id", "Id", product.UserId);
@@ -300,8 +308,8 @@ namespace Bangazon.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var product = await _context.Product
-              .Include(p => p.OrderProducts)
-              .FirstOrDefaultAsync(p => p.ProductId == id);
+            .Include(p => p.OrderProducts)
+            .FirstOrDefaultAsync(p => p.ProductId == id);
 
             if (product.OrderProducts.Count == 0)
             {

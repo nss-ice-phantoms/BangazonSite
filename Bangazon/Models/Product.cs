@@ -17,14 +17,19 @@ namespace Bangazon.Models
 
     [Required]
     [StringLength(255)]
+    [RegularExpression(@"^([a-zA-Z0-9_\s\-]*)$",
+        ErrorMessage = "Characters are not allowed.")]
     public string Description { get; set; }
 
     [Required]
     [StringLength(55, ErrorMessage="Please shorten the product title to 55 characters")]
+    [RegularExpression(@"^([a-zA-Z0-9_\s\-]*)$",
+    ErrorMessage = "Characters are not allowed.")]
     public string Title { get; set; }
 
     [Required]
     [DisplayFormat(DataFormatString = "{0:C}")]
+    [Range(0, 10001, ErrorMessage = "Price cannot exceed $10000")]
     public double Price { get; set; }
 
     [Required]
