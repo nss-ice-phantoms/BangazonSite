@@ -75,6 +75,9 @@ namespace Bangazon
 
                 routes.MapRoute("types", "types",
                     defaults: new { controller = "Products", action = "Types" });
+
+                routes.MapRoute("producttypes", "producttypes",
+                    defaults: new { controller = "Products", action = "ProductTypes" });
             });
         }
     }
