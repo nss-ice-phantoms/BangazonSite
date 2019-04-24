@@ -271,6 +271,7 @@ namespace Bangazon.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
 
+
             if(product.OrderProducts.Count == 0)
             {
                 _context.Product.Remove(product);

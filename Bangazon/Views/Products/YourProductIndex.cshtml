@@ -52,7 +52,10 @@
                 @Html.DisplayFor(modelItem => item.Description)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Title)
+
+                <a asp-controller="Products" asp-action="Details" asp-route-id="@item.ProductId">
+                    @Html.DisplayFor(modelItem => item.Title)
+                </a>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Price)
@@ -70,7 +73,9 @@
                 @Html.DisplayFor(modelItem => item.User.FirstName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ProductType.Label)
+                <a asp-controller="Products" asp-action="Details" asp-route-id="item.ProductId">
+                    @Html.DisplayFor(modelItem => item.ProductType.Label)
+                </a>
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> |
