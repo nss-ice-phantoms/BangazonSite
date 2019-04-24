@@ -11,7 +11,7 @@ Description of changes.
 
 1. `git fetch --all`
 1. `git checkout BRANCHNAME`
-1. Run BangazonWorkforce
+1. Run Bangazon
 1. Verify ....
 
 
