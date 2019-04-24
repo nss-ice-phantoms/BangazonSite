@@ -89,30 +89,7 @@ namespace Bangazon.Controllers
             return View(order);
         }
 
-        // GET: Orders/Create
-        //public IActionResult Create()
-        //{
-        //    ViewData["PaymentTypeId"] = new SelectList(_context.PaymentType, "PaymentTypeId", "AccountNumber");
-        //    ViewData["UserId"] = new SelectList(_context.ApplicationUsers, "Id", "Id");
-        //    return View();
-        //}
-
-        // POST: Orders/Create
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Create([Bind("OrderId,DateCreated,DateCompleted,UserId,PaymentTypeId")] Order order)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        _context.Add(order);
-        //        await _context.SaveChangesAsync();
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    ViewData["PaymentTypeId"] = new SelectList(_context.PaymentType, "PaymentTypeId", "AccountNumber", order.PaymentTypeId);
-        //    ViewData["UserId"] = new SelectList(_context.ApplicationUsers, "Id", "Id", order.UserId);
-        //    return View(order);
-        //}
-
+        // CREATE: Add Product to Cart
         [Authorize]
         public async Task<IActionResult> AddToCart([FromRoute] int id)
         {
@@ -127,11 +104,12 @@ namespace Bangazon.Controllers
             // If no order, create one, else add to existing order
             if (openOrder == null)
             {
-                // Create new order and add product to order
+                // Create new order
                 var order = new Order();
                 order.UserId = user.Id;
                 _context.Add(order);
 
+                // Add product to order, i.e. create OrderProduct
                 var orderProduct = new OrderProduct();
                 orderProduct.ProductId = productToAdd.ProductId;
                 orderProduct.OrderId = order.OrderId;

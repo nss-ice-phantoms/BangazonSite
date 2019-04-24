@@ -53,10 +53,6 @@
             @Html.DisplayFor(model => model.Price)
         </dd>
     </dl>
-    @*<td>
-        <button type="button">Add to Order</button> | 
-        <a asp-action="Edit" asp-route-id="@Model.ProductId">Update</a>
-    </td>*@
     <div>
         <form asp-controller="Orders" asp-action="AddToCart" asp-route-id="@Model.ProductId">
             <input type="submit" value="Add to Cart" class="btn btn-primary" /> &nbsp; <a asp-action="Edit" asp-route-id="@Model.ProductId">Update</a>
