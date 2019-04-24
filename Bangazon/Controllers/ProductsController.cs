@@ -125,16 +125,17 @@ namespace Bangazon.Controllers
                 return RedirectToAction("Details", new { id = viewModel.Product.ProductId.ToString() });
             }
 
+            var productTypesComplete = _context.ProductType;
+
             ViewData["ProductTypeId"] = new SelectList(_context.ProductType, "ProductTypeId", "Label", viewModel.Product.ProductTypeId);
 
-            var productTypesComplete = _context.ProductType;
 
             List<SelectListItem> productTypes = new List<SelectListItem>();
 
             productTypes.Insert(0, new SelectListItem
             {
                 Text = "Assign a Product Category",
-                Value = ""
+                Value = null
             });
 
             foreach (var pt in productTypesComplete)
@@ -152,6 +153,12 @@ namespace Bangazon.Controllers
             return View(viewModel);
 
         }
+
+        public async Task<IActionResult> ErrorPage()
+        {
+            return View();
+        }
+
 
         // GET: Products/Edit/5
         public async Task<IActionResult> Edit(int? id)
