@@ -11,6 +11,12 @@
 }
 @foreach (var orderItem in Model)
 {
+    if (orderItem.OrderProducts.Count < 1)
+    {
+        <div>Your shopping cart is empty!</div>
+    }
+    else
+    {
         <table class="table">
             <tbody>
                 <tr>
@@ -47,5 +53,6 @@
                 </tr>
             </tbody>
         </table>
+    }
 
 }
