@@ -4,11 +4,15 @@
     ViewData["Title"] = "Details";
 }
 
+@{ 
+    string filename = $"/ProductPhotos/{Model.ImagePath}";
+}
 <h1>Details</h1>
 
 <div>
     <h4>Product</h4>
     <hr />
+    <img src="@filename" class="img-responsive"  />
     <dl class="row">
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Title)
@@ -23,6 +27,12 @@
             @Html.DisplayFor(model => model.Description)
         </dd>
         <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Price)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Price)
+        </dd>
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Quantity)
         </dt>
         <dd class="col-sm-10">
@@ -35,22 +45,10 @@
             @Html.DisplayFor(model => model.City)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ImagePath)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ImagePath)
-        </dd>
-        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.ProductType)
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.ProductType)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Price)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Price)
         </dd>
     </dl>
     <div>
