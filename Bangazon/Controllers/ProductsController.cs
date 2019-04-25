@@ -9,6 +9,8 @@ using Bangazon.Models;
 using Bangazon.Models.ProductViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace Bangazon.Controllers
 {
@@ -170,11 +172,10 @@ namespace Bangazon.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ProductCreateViewModel viewModel)
+        public async Task<IActionResult> Create(ProductCreateViewModel viewModel, IFormFile image)
         {
             ModelState.Remove("Product.User");
             ModelState.Remove("Product.UserId");
-
 
             ApplicationUser user = await GetCurrentUserAsync();
 
@@ -183,6 +184,15 @@ namespace Bangazon.Controllers
 
             if (ModelState.IsValid)
             {
+                if (image != null && image.Length > 0) {
+                    var fileName = Path.GetFileName(image.FileName);
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\ProductPhotos", fileName);
+                    using (var fileSteam = new FileStream(filePath, FileMode.Create)) {
+                        await image.CopyToAsync(fileSteam);
+                    }
+                    viewModel.Product.ImagePath = fileName;
+                }
+
                 _context.Add(viewModel.Product);
 
                 await _context.SaveChangesAsync();

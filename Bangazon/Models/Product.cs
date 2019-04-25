@@ -41,6 +41,7 @@ namespace Bangazon.Models
     [Display(Name = "Product Location")]
     public string City {get; set;}
 
+    [Display(Name = "Upload a Product Photo:")]
     public string ImagePath {get; set;}
 
     [Required]
