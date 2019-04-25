@@ -5,7 +5,7 @@
 }
 
 @foreach (var item in Model.GroupedProducts) {
-    <div>
+    <div class="category">
         <a asp-controller="Products" asp-action="ProductTypes" asp-route-id="@item.TypeId">
             @Html.DisplayFor(model => item.TypeName)</a>
            (@Html.DisplayFor(model => item.ProductCount))

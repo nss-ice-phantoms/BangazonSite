@@ -29,6 +29,8 @@ namespace Bangazon.Areas.Identity.Pages.Account.Manage
         }
 
         public string Username { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
 
         public bool IsEmailConfirmed { get; set; }
 
@@ -40,6 +42,18 @@ namespace Bangazon.Areas.Identity.Pages.Account.Manage
 
         public class InputModel
         {
+
+            [Required]
+            [Display(Name = "First Name")]
+            public string FirstName { get; set; }
+
+            [Required]
+            [Display(Name = "Last Name")]
+            public string LastName { get; set; }
+
+            [Required]
+            public string Address { get; set; }
+
             [Required]
             [EmailAddress]
             public string Email { get; set; }
@@ -60,13 +74,19 @@ namespace Bangazon.Areas.Identity.Pages.Account.Manage
             var userName = await _userManager.GetUserNameAsync(user);
             var email = await _userManager.GetEmailAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            var firstName = user.FirstName;
+            var lastName = user.LastName;
+            var address = user.StreetAddress;
 
             Username = userName;
 
             Input = new InputModel
             {
                 Email = email,
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                FirstName = firstName,
+                LastName = lastName,
+                Address = address
             };
 
             IsEmailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
@@ -108,6 +128,11 @@ namespace Bangazon.Areas.Identity.Pages.Account.Manage
                     throw new InvalidOperationException($"Unexpected error occurred setting phone number for user with ID '{userId}'.");
                 }
             }
+            
+            user.FirstName = Input.FirstName;
+            user.LastName = Input.LastName;
+            user.StreetAddress = Input.Address;
+            await _userManager.UpdateAsync(user);
 
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your profile has been updated";
