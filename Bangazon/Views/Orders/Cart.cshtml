@@ -11,11 +11,6 @@
 }
 @foreach (var orderItem in Model)
 {
-    @*if (orderItem.OrderProducts.Count < 1)
-    {
-        <div>Your shopping cart is empty!</div>
-    }
-    else*@
         <table class="table">
             <tbody>
                 <tr>
@@ -36,6 +31,9 @@
                                     <td>
                                         @Html.DisplayFor(modelItem => orderProduct.Product.Price)
                                     </td>
+                                    <td>
+                                        <a asp-action="RemoveFromCart" asp-route-id="@orderProduct.OrderProductId">Delete</a>
+                                    </td>
                                 </tr>
                             }
                         </table>
@@ -44,7 +42,6 @@
                 <tr>
                     <td>
                         <a asp-action="Edit" asp-route-id="@orderItem.OrderId">Proceed to Checkout</a> |
-                        @*<a asp-action="Details" asp-route-id="@item.OrderId">Details</a> |*@
                         <a asp-action="Delete" asp-route-id="@orderItem.OrderId">Empty Shopping Cart</a>
                     </td>
                 </tr>
