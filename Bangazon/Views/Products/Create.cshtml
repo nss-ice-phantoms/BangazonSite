@@ -13,14 +13,14 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Product.Description" class="control-label"></label>
-                <input asp-for="Product.Description" class="form-control" />
-                <span asp-validation-for="Product.Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="Product.Title" class="control-label"></label>
                 <input asp-for="Product.Title" class="form-control" />
                 <span asp-validation-for="Product.Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Product.Description" class="control-label"></label>
+                <input asp-for="Product.Description" class="form-control" />
+                <span asp-validation-for="Product.Description" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Product.Price" class="control-label"></label>
@@ -37,12 +37,15 @@
                 <input asp-for="Product.City" class="form-control" />
                 <span asp-validation-for="Product.City" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Product.ImagePath" class="control-label"></label>
-                <input asp-for="Product.ImagePath" class="form-control" />
-                <span asp-validation-for="Product.ImagePath" class="text-danger"></span>
+            <div method="post" enctype="multipart/form-data" asp-controller="Products" asp-action="Create">
+                <div class="form-group">
+                    <div class="col-md-10">
+                        <p>Upload a product photo:</p>
+                        <input type="file" name="ProductPhoto">
+                        <input type="submit" value="Upload">
+                    </div>
+                </div>
             </div>
-           
             <div class="form-group">
                 <label asp-for="Product.ProductTypeId" class="control-label"></label>
                 <select asp-for="Product.ProductTypeId" class="form-control" asp-items="@Model.ProductTypeList"></select>
