@@ -54,3 +54,14 @@ body {
   height: 60px;
   line-height: 60px; /* Vertically center the text there */
 }
+
+/* Custom CSS */
+.category a {
+    color: #000;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.category a:hover {
+    text-decoration: underline;
+}
