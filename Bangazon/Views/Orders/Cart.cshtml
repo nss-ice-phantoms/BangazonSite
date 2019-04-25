@@ -29,7 +29,9 @@
                             {
                                 <tr>
                                     <td>
-                                        @Html.DisplayFor(modelItem => orderProduct.Product.Title)
+                                        <a asp-controller="Products" asp-action="Details" asp-route-id="@orderProduct.Product.ProductId">
+                                            @Html.DisplayFor(modelItem => orderProduct.Product.Title)
+                                        </a>
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => orderProduct.Product.Price)
