@@ -129,6 +129,20 @@ namespace Bangazon.Controllers
             return RedirectToAction(nameof(Cart));
         }
 
+        // DELETE: Remove Product From Cart
+        [Authorize]
+        public async Task<IActionResult> RemoveFromCart([FromRoute] int id)
+        {
+            // Find the orderProduct requested
+            OrderProduct orderProductToRemove = await _context.OrderProduct.SingleOrDefaultAsync(op => op.OrderProductId == id);
+
+            // Delete OrderProduct
+            _context.OrderProduct.Remove(orderProductToRemove);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Cart));
+        }
+
         // GET: Orders/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
